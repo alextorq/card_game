@@ -1,0 +1,102 @@
+:root {
+  --cars_width: 20vw; 
+  --card_height: 33vh;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-size: 0;
+    line-height: 0;
+  }
+  
+  html {
+    padding: 0;
+    margin: 0;
+  }
+  body {
+    background: #5d61f1;
+    margin: 0;
+    padding: 0;
+
+  }
+  .memory-game {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+    perspective: 1000px;
+  }
+  
+  .memory-card {
+    width: var(--cars_width);
+    height: var(--card_height);
+    padding: 5px;
+    position: relative;
+    transform: scale(1);
+    transform-style: preserve-3d;
+    transition: transform .5s;
+  
+    cursor: pointer;
+    user-select: none;
+    &::after {
+      position: absolute;
+      top: 5px;
+      bottom: 5px;
+      left: 5px;
+      right: 5px;
+      content: '';
+      background-color: #9cd2ff;
+      z-index: 0;
+      border-radius: 5px;
+    }
+  }
+  
+  .memory-card:active {
+    transform: scale(0.97);
+    transition: transform .2s;
+  }
+  
+  .memory-card.flip {
+    transform: rotateY(180deg);
+  }
+  .front-face {
+    z-index: 5;
+  }
+  .back-face { 
+    z-index: 1;
+  }
+  .front-face,
+  .back-face {
+    width: 100%;
+    height: 100%;
+    padding: 10% 20%;
+    position: absolute;
+    
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    backface-visibility: hidden;
+    user-select: none;
+  }
+  
+  .front-face {
+    transform: rotateY(180deg);
+  }
+
+
+  .analytics {
+    position: fixed;
+    right: 0;
+    background-color: white;
+    padding: 10px 40px;
+    font-size: 18px;
+    top: 50%;
+    span {
+      font-size: 18px;
+    }
+  }
