@@ -4,4 +4,4 @@ import Model from './Model';
 import Controller from './Controller';
 
 
-let app = new Controller(new Model, new View())
+let app = new Controller(new Model(), new View());

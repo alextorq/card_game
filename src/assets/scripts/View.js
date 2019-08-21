@@ -1,22 +1,15 @@
 import PublisherSubscriber from './PubSub';
 
-const TIME_TO_OPEN = 1200;
-
-
 
 
 class View {
     constructor() {
       this.cardWrapper = document.querySelector('.memory-game');
       this.event = new PublisherSubscriber();
+      this.isFirst = false;
+      this.isBlock = false;
     }
-  
-    compareCard(card, stage) {
-      let framework = card.getAttribute('data-framework');
-      let lastFramework = stage.currentCard.getAttribute('data-framework');
-      return framework === lastFramework;
-    }
-  
+
     setStyle(amountColumn, amountRow) {
       let root = document.documentElement;
       root.style.setProperty('--cars_width', (100 / amountColumn) + 'vw');
@@ -24,34 +17,20 @@ class View {
     }
   
     addHandler() {
-      this.cardWrapper.addEventListener( 'click', function(event) {
-      let card = event.target.closest('.memory-card');
-      if (!parent) {return}
+      this.cardWrapper.addEventListener( 'click', (event) =>{
+          let card = event.target.closest('.memory-card');
+          if (!card || this.isBlock) {return}
 
-      this.event.f
-    
-      card.classList.add('flip');
-    
-      if (!this.stage.currentCard) {
-        this.stage.currentCard = card;
-      }
-    
-      else {
-        let status = this.compareCard(card, stage);
-        if (!status) {
-          this.stage.isBlock = true;
-          setTimeout(() => {this.resetCards(card, stage)}, TIME_TO_OPEN);
-        }
-        else {
-          this.successOpen(stage);
-        }
-      }
-    
-      if (!isFirst) {
-        isFirst = true;
-        this.timer();
-      }
-    })
+          this.event.fireEvent('selectCard', {
+              card,
+              framework: card.getAttribute('data-framework')
+          });
+
+          if (!this.isFirst) {
+              this.isFirst = true;
+              this.event.fireEvent('firstClick', {});
+          }
+      })
     }
     createCard(framework) {
         let template = `
@@ -69,15 +48,7 @@ class View {
       let timeWrap = document.querySelector('#time span');
       timeWrap.innerHTML = time;
     }
-  
-    resetCards(card, stage) {
-      stage.currentCard.classList.remove('flip')
-      card.classList.remove('flip');
-      stage.currentCard = null;
-      stage.isBlock = false;
-    }
-  
-  
+
     createGrid (k, typesOfCars) {
       let cardWrapper = document.querySelector('.memory-game');
       while (k) {
@@ -86,6 +57,7 @@ class View {
         }
         k--;
       }
+      this.addHandler();
       this.randomCard();
     }
   

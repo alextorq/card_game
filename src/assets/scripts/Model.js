@@ -2,7 +2,27 @@ class Model {
     constructor() {
         this.openCards = [];
         this.currentCard = null;
-        this.isBlock = false;
+
+        this.levels = [
+            {
+                amountColumn: 5,
+                amountRow: 5,
+                amountPair: 5,
+                cardToCompare: 2
+            },
+            {
+                amountColumn: 5,
+                amountRow: 5,
+                amountPair: 5,
+                cardToCompare: 2
+            },
+            {
+                amountColumn: 5,
+                amountRow: 5,
+                amountPair: 5,
+                cardToCompare: 2
+            },
+        ];
         this.typesOfCars = [
           {
             name: 'vue',
@@ -29,6 +49,25 @@ class Model {
       this.amountRow = 5;
       this.amountPair = 5;
       this.time = 0;
+    }
+
+    /**
+     * Set current level
+     * @param {Object} level
+     */
+    setLevel(level) {
+        this.amountColumn = level.amountColumn;
+        this.amountRow = level.amountRow;
+        this.amountPair = level.amountPair;
+
+    }
+
+    /**
+     * @param {Object} card
+     * @return {void}
+     */
+    setCurrentCard(card) {
+        this.currentCard = card;
     }
 }
 
