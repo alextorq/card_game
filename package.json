@@ -12,7 +12,8 @@
   "license": "ISC",
   "keywords": [],
   "dependencies": {
-    "babel-polyfill": "^6.26.0"
+    "babel-polyfill": "^6.26.0",
+    "random-number": "0.0.9"
   },
   "devDependencies": {
     "autoprefixer": "^9.6.1",

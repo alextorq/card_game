@@ -1,70 +1,133 @@
 const TIME_TO_OPEN = 1200;
 
 class Controller {
-    constructor(model, view) {
-      this.model = model;
-      this.view = view;
-  
-      this.view.createGrid(this.model.amountPair, this.model.typesOfCars);
+	constructor(model, view) {
+		this.model = model;
+		this.view = view;
 
-      this.view.event.addListener('firstClick', () => {
-          this.startTimer();
-      });
+		this.changeLevel(0);
 
-        this.view.event.addListener('selectCard', (event) => {
-            if (this.checkSelected(event.card)) {return}
+		this.model.event.addListener('finish', () => {
+			this.changeLevel(this.model.currentLevel + 1);
+		});
 
-            event.card.classList.add('flip');
+		this.view.event.addListener('firstClick', () => {
+			this.startTimer();
+		});
 
-            if (!this.model.currentCard) {
-                this.model.setCurrentCard(event.card);
-            }
+		this.view.event.addListener('selectCard', (card) => {
+			// Если карта уже открыта то выходим 
+			if (this.checkSelected(card)) {return}
 
-            else {
-                let status = this.compareCard(event.card);
-                if (!status) {
-                    this.view.isBlock = true;
-                    setTimeout(() => {this.resetCards(event.card)}, TIME_TO_OPEN);
-                }
-                else {
-                    this.successOpen(event.card);
-                }
-            }
-        });
+			this.view.showCard(card);
+			this.setScore();
 
-    }
+			// Если это первая карта в паре то выходим
+			if (!this.model.currentCard.length) {
+				this.model.setCurrentCard(card);
+			} else {
+				let status = this.compareCard(card);
+				if (!status) {
+					this.view.isBlock = true;
+					setTimeout(() => {
+						this.resetCards(card)
+					}, TIME_TO_OPEN);
+				} else {
+					// проверяем если количество карт недостаточно для полного открытия карт 
+					// добавляем их в пару и выходим
+					if (this.model.currentCard.length < this.model.getLevel().cardToCompare - 1) {
+						this.model.setCurrentCard(card);
+						return
+					}
+					this.successOpen(card);
+				}
+			}
+		});
+	}
 
-    resetCards(card) {
-        this.model.currentCard.classList.remove('flip');
-        card.classList.remove('flip');
-        this.model.currentCard = null;
-        this.view.isBlock = false;
-    }
+	/**
+	 * @param {Number} level
+	 * @return {void} 
+	 */
+	changeLevel(level) {
+		this.stopTimer();
 
-    checkSelected(card) {
-        return this.model.currentCard === card && this.model.openCards.includes(card);
-    }
+		this.model.openCard = [];
+		this.model.setLevel(level);
 
-    compareCard(card) {
-        let framework = card.getAttribute('data-framework');
-        let lastFramework = this.model.currentCard.getAttribute('data-framework');
-        return framework === lastFramework;
-    }
+		this.view.isFirst = true;
+		this.view.isBlock = false;
+		this.view.createGrid(
+			this.model.getLevel().amountPair, 
+			this.model.getLevel().cardToCompare, 
+			this.model.getLevel().typesOfCars
+		  );
+	
+		this.view.setStyle(
+			this.model.getLevel().amountColumn,
+			this.model.getLevel().amountRow
+		)
+	}
 
-    successOpen(card) {
-      this.model.openCards.push(card);
-      this.model.openCards.push(this.model.currentCard);
-      this.model.currentCard = null;
-      this.view.isBlock = false;
-    }
-    stopTimer() {
-        clearInterval(this.timerID);
-    }
-    startTimer() {
-      this.timerID = setInterval(() => {
-        this.view.setTime(this.model.time++)
-      }, 1000)
-    }
+
+	setScore() {
+		this.view.setScore(this.model.score)
+	}
+
+	/**
+	 * @param {Object} card
+	 * @return {void} 
+	 */
+	resetCards(card) {
+		this.view.hideCards([card, ...this.model.currentCard])
+		this.model.currentCard = [];
+		this.view.isBlock = false;
+	}
+
+	/**
+	 * @param {Object} card
+	 * @return {Boolean} 
+	 */
+	checkSelected(card) {
+		return this.model.openCards.includes(card) || this.model.currentCard.includes(card);
+	}
+
+	/**
+	 * @param {Object} card
+	 * @return {Boolean} 
+	 */
+	compareCard(card) {
+		let framework = card.framework;
+		let lastFramework = this.model.currentCard[this.model.currentCard.length -1].framework;
+		return framework === lastFramework;
+	}
+
+	/**
+	 * @param {Object} card
+	 * @return {void} 
+	 */
+	successOpen(card) {
+		this.model.setOpenCards([card, ...this.model.currentCard]);
+		this.model.currentCard = [];
+		this.view.isBlock = false;
+		this.model.checkFinish()
+	}
+
+	/**
+	 * @return {void}
+	 */
+	stopTimer() {
+		clearInterval(this.timerID);
+	}
+
+	/**
+	 * @return {void}
+	*/
+	startTimer() {
+		this.timerID = setInterval(() => {
+			this.view.setTime(this.model.time++)
+		}, 1000)
+	}
 }
   
 
