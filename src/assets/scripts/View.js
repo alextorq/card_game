@@ -1,6 +1,10 @@
 import PublisherSubscriber from './PubSub';
 import  rn  from 'random-number';
 
+/**
+ * Time flip card
+ * @type {Number}
+ */
 const TIME_TO_ANIMATE = 500;
  
 class View {
@@ -27,8 +31,8 @@ class View {
 				this.event.fireEvent('selectCard', card);
 
 				if (this.isFirst) {
-						this.isFirst = false;
-						this.event.fireEvent('firstClick', {});
+					this.isFirst = false;
+					this.event.fireEvent('firstClick', {});
 				}
 			})
 		}
@@ -116,7 +120,7 @@ class View {
 				cards.forEach(card => {
 					card.classList.add('active')
 				});
-			}, 500)
+			}, TIME_TO_ANIMATE)
 		}
 	
 		randomCard() {

@@ -51,8 +51,7 @@ class Controller {
 	 */
 	changeLevel(level) {
 		this.stopTimer();
-
-		this.model.openCard = [];
+		this.model.openCards = [];
 		this.model.setLevel(level);
 
 		this.view.isFirst = true;

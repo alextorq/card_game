@@ -8350,6 +8350,10 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+/**
+ * Time flip card
+ * @type {Number}
+ */
 var TIME_TO_ANIMATE = 500;
 
 var View =
@@ -8528,7 +8532,7 @@ function () {
         cards.forEach(function (card) {
           card.classList.add('active');
         });
-      }, 500);
+      }, TIME_TO_ANIMATE);
     }
   }, {
     key: "randomCard",
@@ -8824,7 +8828,7 @@ function () {
     key: "changeLevel",
     value: function changeLevel(level) {
       this.stopTimer();
-      this.model.openCard = [];
+      this.model.openCards = [];
       this.model.setLevel(level);
       this.view.isFirst = true;
       this.view.isBlock = false;
@@ -8961,7 +8965,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36783" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36123" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
