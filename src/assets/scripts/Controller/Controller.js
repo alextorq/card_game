@@ -1,15 +1,27 @@
-const TIME_TO_OPEN = 1200;
+const TIME_TO_OPEN = 1300;
 
 class Controller {
-	constructor(model, view) {
+	constructor(model, view, router) {
 		this.model = model;
 		this.view = view;
-
+		this.router = router;
+		this.status = false;
 		this.changeLevel(0);
 
 		this.model.event.addListener('finish', () => {
 			this.changeLevel(this.model.currentLevel + 1);
 		});
+
+		this.model.event.addListener('game_over', () => {
+			this.status = true;
+			this.view.showAllCards();
+			setTimeout(() => {
+				this.view.reset(true);
+				this.stopTimer();
+				this.router.push({name: 'GAME_OVER'});
+			}, 5000);
+		});
+		
 
 		this.view.event.addListener('firstClick', () => {
 			this.startTimer();
@@ -17,10 +29,10 @@ class Controller {
 
 		this.view.event.addListener('selectCard', (card) => {
 			// Если карта уже открыта то выходим 
-			if (this.checkSelected(card)) {return}
+			if (this.checkSelected(card)) {return;}
 
 			this.view.showCard(card);
-			this.setScore();
+			this.setScore(false);
 
 			// Если это первая карта в паре то выходим
 			if (!this.model.currentCard.length) {
@@ -30,18 +42,20 @@ class Controller {
 				if (!status) {
 					this.view.isBlock = true;
 					setTimeout(() => {
-						this.resetCards(card)
+						this.resetCards(card);
 					}, TIME_TO_OPEN);
 				} else {
 					// проверяем если количество карт недостаточно для полного открытия карт 
 					// добавляем их в пару и выходим
 					if (this.model.currentCard.length < this.model.getLevel().cardToCompare - 1) {
 						this.model.setCurrentCard(card);
-						return
+						return;
 					}
 					this.successOpen(card);
+					this.setScore(true);
 				}
 			}
+			this.model.checkFinishOrGameOver();
 		});
 	}
 
@@ -52,25 +66,36 @@ class Controller {
 	changeLevel(level) {
 		this.stopTimer();
 		this.model.openCards = [];
-		this.model.setLevel(level);
 
-		this.view.isFirst = true;
-		this.view.isBlock = false;
+
+		let status = this.model.setLevel(level);
+		if (status) {
+			this.router.push();
+			return;
+		}
+
 		this.view.createGrid(
 			this.model.getLevel().amountPair, 
 			this.model.getLevel().cardToCompare, 
 			this.model.getLevel().typesOfCars
-		  );
-	
+			);
+
 		this.view.setStyle(
 			this.model.getLevel().amountColumn,
 			this.model.getLevel().amountRow
-		)
+		);
 	}
 
 
-	setScore() {
-		this.view.setScore(this.model.score)
+	/**
+	 * 
+	 * @param {Boolean} success 
+	 * @return {void}
+	 */
+	setScore(success) {
+		let increment = success ? this.model.getLevel().scoreSuccess : - this.model.getLevel().scoreOpen;
+		this.model.score = this.model.score + increment;	
+		this.view.setScore(this.model.score);
 	}
 
 	/**
@@ -78,7 +103,8 @@ class Controller {
 	 * @return {void} 
 	 */
 	resetCards(card) {
-		this.view.hideCards([card, ...this.model.currentCard])
+		if (this.status) {return;}
+		this.view.hideCards([card, ...this.model.currentCard]);
 		this.model.currentCard = [];
 		this.view.isBlock = false;
 	}
@@ -109,7 +135,6 @@ class Controller {
 		this.model.setOpenCards([card, ...this.model.currentCard]);
 		this.model.currentCard = [];
 		this.view.isBlock = false;
-		this.model.checkFinish()
 	}
 
 	/**
@@ -124,8 +149,8 @@ class Controller {
 	*/
 	startTimer() {
 		this.timerID = setInterval(() => {
-			this.view.setTime(this.model.time++)
-		}, 1000)
+			this.view.setTime(this.model.time++);
+		}, 1000);
 	}
 }
   

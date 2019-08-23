@@ -18,9 +18,9 @@ class PublisherSubscriber {
 	 * @return {void}
 	 */
 	removeListener(eventName, userFunction) {
-		if (!this.eventDispatch[eventName]) {return}
+		if (!this.eventDispatch[eventName]) {return;}
 		let index = this.eventDispatch[eventName].findIndex((func) => func === userFunction);
-		this.eventDispatch[eventName].splice(index, 1)
+		this.eventDispatch[eventName].splice(index, 1);
 	}
 		
 	/**
@@ -30,7 +30,7 @@ class PublisherSubscriber {
 	 */
 	fireEvent(eventName, event) {
 		if (!this.eventDispatch[eventName]) {
-			return
+			return;
 		}
 
 		for (let subscriber of this.eventDispatch[eventName]) {

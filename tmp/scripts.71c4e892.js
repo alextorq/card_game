@@ -8330,7 +8330,7 @@ void function(root){
   module.exports.defaults = defaults
 }(this)
 
-},{}],"assets/scripts/View.js":[function(require,module,exports) {
+},{}],"assets/scripts/View/View.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8338,7 +8338,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _PubSub = _interopRequireDefault(require("./PubSub"));
+var _PubSub = _interopRequireDefault(require("../PubSub"));
 
 var _randomNumber = _interopRequireDefault(require("random-number"));
 
@@ -8359,16 +8359,30 @@ var TIME_TO_ANIMATE = 500;
 var View =
 /*#__PURE__*/
 function () {
-  function View() {
+  function View(root) {
     _classCallCheck(this, View);
 
-    this.cardWrapper = document.querySelector('.memory-game');
+    this.root = root;
+    this.createWrapper();
+    this.handler = this.handler.bind(this);
     this.event = new _PubSub.default();
     this.isFirst = true;
     this.isBlock = false;
   }
 
   _createClass(View, [{
+    key: "createWrapper",
+    value: function createWrapper() {
+      this.root.innerHTML = "\n\t\t\t<section class=\"memory-game\">\n\t\t\t</section>\n\t\n\t\t\t<div class=\"analytics\">\n\t\t\t\t<div>\n\t\t\t\t\tTIME:\n\t\t\t\t\t<span id=\"time\" class=\"time\">0</span>\n\t\t\t\t</div>\n\t\t\t\t<div>\n\t\t\t\t\tSCORE\n\t\t\t\t\t<span id=\"score\" class=\"score\">0</span>\n\t\t\t\t</div>\n\t\t\t</div>";
+      this.cardWrapper = document.querySelector('.memory-game');
+    }
+    /**
+     * @param {Number} amountColumn 
+     * @param {number} amountRow
+     * @return {void} 
+     */
+
+  }, {
     key: "setStyle",
     value: function setStyle(amountColumn, amountRow) {
       var root = document.documentElement;
@@ -8379,29 +8393,46 @@ function () {
   }, {
     key: "addHandler",
     value: function addHandler() {
-      var _this = this;
+      this.cardWrapper.addEventListener('click', this.handler);
+    }
+  }, {
+    key: "removeHandler",
+    value: function removeHandler() {
+      this.cardWrapper.removeEventListener('click', this.handler);
+    }
+  }, {
+    key: "handler",
+    value: function handler(event) {
+      var card = event.target.closest('.memory-card');
 
-      this.cardWrapper.addEventListener('click', function (event) {
-        var card = event.target.closest('.memory-card');
+      if (!card || this.isBlock) {
+        return;
+      }
 
-        if (!card || _this.isBlock) {
-          return;
-        }
+      this.event.fireEvent('selectCard', card);
 
-        _this.event.fireEvent('selectCard', card);
-
-        if (_this.isFirst) {
-          _this.isFirst = false;
-
-          _this.event.fireEvent('firstClick', {});
-        }
-      });
+      if (this.isFirst) {
+        this.isFirst = false;
+        this.event.fireEvent('firstClick', {});
+      }
     }
   }, {
     key: "showCard",
     value: function showCard(card) {
       card.querySelector('.front-face').src = card.imageCard;
       card.classList.add('flip');
+    }
+  }, {
+    key: "showAllCards",
+    value: function showAllCards() {
+      var cards = Array.from(document.querySelectorAll('.memory-card'));
+      cards.forEach(function (item) {
+        item.querySelector('.front-face').src = item.imageCard;
+        item.classList.add('open');
+        item.classList.remove('active'); // setTimeout(() => {
+        // 	// item.classList.add('transition-top');
+        // }, 20);
+      });
     }
   }, {
     key: "hideCards",
@@ -8413,6 +8444,11 @@ function () {
         }, TIME_TO_ANIMATE);
       });
     }
+    /**
+     * Load image previously
+     * @param {Array} typesOfCars 
+     */
+
   }, {
     key: "createImage",
     value: function createImage(typesOfCars) {
@@ -8443,13 +8479,26 @@ function () {
     }
   }, {
     key: "reset",
-    value: function reset() {
+    value: function reset(time) {
+      if (!time) {
+        this.isFirst = true;
+      }
+
+      this.isBlock = false;
       this.cardWrapper.innerHTML = '';
+      this.removeHandler();
     }
+    /**
+     * 
+     * @param {String} framework 
+     * @param {String} image 
+     * @return {Object} 
+     */
+
   }, {
     key: "createCard",
     value: function createCard(framework, image) {
-      var template = "\n\t\t\t<div class=\"memory-card\">\n\t\t\t\t<img class=\"front-face\" src=\"\" alt=\"frame\" />\n\t\t\t\t<img class=\"back-face\" src=\"/assets/image/js-badge.svg\" alt=\"JS Badge\" />\n\t\t\t</div>\n\t\t\t";
+      var template = "\n\t\t<div class=\"memory-card\">\n\t\t\t<img class=\"front-face\" src=\"\" alt=\"frame\" />\n\t\t\t<img class=\"back-face\" src=\"/assets/image/cover.jpg\" alt=\"Morty\" />\n\t\t</div>\n\t\t";
       var cardWrapper = document.createElement('div');
       cardWrapper.innerHTML = template;
       var card = cardWrapper.firstElementChild;
@@ -8479,11 +8528,18 @@ function () {
       var scoreWrap = document.getElementById('score');
       scoreWrap.innerHTML = score;
     }
+    /**
+     * @param {Number} amountPair 
+     * @param {Number} amountCard 
+     * @param {Array} typesOfCars 
+     * @return {void}
+     */
+
   }, {
     key: "createGrid",
     value: function createGrid(amountPair, amountCard, typesOfCars) {
+      this.reset();
       var cardWrapper = document.querySelector('.memory-game');
-      cardWrapper.innerHTML = '';
       var index = amountPair * amountCard;
 
       while (index) {
@@ -8558,7 +8614,7 @@ function () {
 
 var _default = View;
 exports.default = _default;
-},{"./PubSub":"assets/scripts/PubSub.js","random-number":"../node_modules/random-number/index.js"}],"assets/scripts/Model.js":[function(require,module,exports) {
+},{"../PubSub":"assets/scripts/PubSub.js","random-number":"../node_modules/random-number/index.js"}],"assets/scripts/Model/Model.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8566,7 +8622,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _PubSub = _interopRequireDefault(require("./PubSub"));
+var _PubSub = _interopRequireDefault(require("../PubSub"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -8611,72 +8667,84 @@ function () {
       cardToCompare: 2,
       scoreOpen: 5,
       scoreSuccess: 10,
+      optionalScore: 60,
       typesOfCars: [{
         name: 'vue',
-        image: 'assets/image/vue.svg'
+        image: 'assets/image/witcher/witcher_1.jpg'
       }, {
         name: 'aurelia',
-        image: 'assets/image/aurelia.svg'
+        image: 'assets/image/witcher/witcher_2.jpg'
       }, {
         name: 'angular',
-        image: "assets/image/angular.svg"
+        image: 'assets/image/witcher/witcher_3.jpg'
       }, {
         name: 'backbone',
-        image: "assets/image/backbone.svg"
+        image: 'assets/image/witcher/witcher_4.jpg'
       }, {
         name: 'ember',
-        image: "assets/image/ember.svg"
+        image: 'assets/image/witcher/witcher_5.jpg'
       }]
     }, {
-      amountColumn: 8,
-      amountRow: 4,
-      amountPair: 2,
+      amountColumn: 6,
+      amountRow: 3,
+      amountPair: 1,
       cardToCompare: 3,
       scoreOpen: 5,
       scoreSuccess: 10,
-      typesOfCars: [{
-        name: 'witcher_1',
-        image: 'assets/image/witcher_1.jpg'
-      }, {
-        name: 'aurelia',
-        image: 'assets/image/aurelia.svg'
-      }, {
-        name: 'angular',
-        image: "assets/image/angular.svg"
-      }, {
-        name: 'backbone',
-        image: "assets/image/backbone.svg"
-      }, {
-        name: 'ember',
-        image: "assets/image/ember.svg"
-      }]
-    }, {
-      amountColumn: 5,
-      amountRow: 5,
-      amountPair: 5,
-      cardToCompare: 4,
-      scoreOpen: 5,
-      scoreSuccess: 10,
+      optionalScore: 60,
       typesOfCars: [{
         name: 'vue',
-        image: 'assets/image/vue.svg'
+        image: 'assets/image/witcher/witcher_1.jpg'
       }, {
         name: 'aurelia',
-        image: 'assets/image/aurelia.svg'
+        image: 'assets/image/witcher/witcher_2.jpg'
       }, {
         name: 'angular',
-        image: "assets/image/angular.svg"
+        image: 'assets/image/witcher/witcher_3.jpg'
       }, {
         name: 'backbone',
-        image: "assets/image/backbone.svg"
+        image: 'assets/image/witcher/witcher_4.jpg'
       }, {
         name: 'ember',
-        image: "assets/image/ember.svg"
+        image: 'assets/image/witcher/witcher_5.jpg'
+      }, {
+        name: 'sdd',
+        image: 'assets/image/witcher/witcher_6.jpg'
+      }]
+    }, {
+      amountColumn: 7,
+      amountRow: 4,
+      amountPair: 1,
+      cardToCompare: 4,
+      scoreOpen: 5,
+      scoreSuccess: 15,
+      optionalScore: 150,
+      typesOfCars: [{
+        name: 'vue',
+        image: 'assets/image/witcher/witcher_11.jpg'
+      }, {
+        name: 'aurelia',
+        image: 'assets/image/witcher/witcher_12.jpg'
+      }, {
+        name: 'angular',
+        image: 'assets/image/witcher/witcher_10.jpg'
+      }, {
+        name: 'backbone',
+        image: 'assets/image/witcher/witcher_9.jpg'
+      }, {
+        name: 'ember',
+        image: 'assets/image/witcher/witcher_8.jpg'
+      }, {
+        name: 'sdd',
+        image: 'assets/image/witcher/witcher_7.jpg'
+      }, {
+        name: 'sdd',
+        image: 'assets/image/witcher/witcher_6.jpg'
       }]
     }];
     this.currentLevel = 0;
     this.time = 0;
-    this.score = 100;
+    this.score = 0;
   }
   /**
    * get current level
@@ -8691,21 +8759,32 @@ function () {
     }
     /**
      * @param {Number} level 
-     * @return {void}
+     * @return {Boolean}
      */
 
   }, {
     key: "setLevel",
     value: function setLevel(level) {
+      if (level > this.levels.length - 1) {
+        return true;
+      }
+
       this.currentLevel = level;
+      this.score = this.score + this.getLevel().optionalScore;
+      return false;
     }
     /**
      * @return {void}
      */
 
   }, {
-    key: "checkFinish",
-    value: function checkFinish() {
+    key: "checkFinishOrGameOver",
+    value: function checkFinishOrGameOver() {
+      if (!this.score) {
+        this.event.fireEvent('game_over', level);
+        return;
+      }
+
       var level = this.getLevel();
       var status = level.amountPair * level.cardToCompare * level.typesOfCars.length === this.openCards.length;
 
@@ -8742,7 +8821,7 @@ function () {
 
 var _default = Model;
 exports.default = _default;
-},{"./PubSub":"assets/scripts/PubSub.js"}],"assets/scripts/Controller.js":[function(require,module,exports) {
+},{"../PubSub":"assets/scripts/PubSub.js"}],"assets/scripts/Controller/Controller.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8764,21 +8843,38 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var TIME_TO_OPEN = 1200;
+var TIME_TO_OPEN = 1300;
 
 var Controller =
 /*#__PURE__*/
 function () {
-  function Controller(model, view) {
+  function Controller(model, view, router) {
     var _this = this;
 
     _classCallCheck(this, Controller);
 
     this.model = model;
     this.view = view;
+    this.router = router;
+    this.status = false;
     this.changeLevel(0);
     this.model.event.addListener('finish', function () {
       _this.changeLevel(_this.model.currentLevel + 1);
+    });
+    this.model.event.addListener('game_over', function () {
+      _this.status = true;
+
+      _this.view.showAllCards();
+
+      setTimeout(function () {
+        _this.view.reset(true);
+
+        _this.stopTimer();
+
+        _this.router.push({
+          name: 'GAME_OVER'
+        });
+      }, 5000);
     });
     this.view.event.addListener('firstClick', function () {
       _this.startTimer();
@@ -8791,7 +8887,7 @@ function () {
 
       _this.view.showCard(card);
 
-      _this.setScore(); // Если это первая карта в паре то выходим
+      _this.setScore(false); // Если это первая карта в паре то выходим
 
 
       if (!_this.model.currentCard.length) {
@@ -8814,8 +8910,12 @@ function () {
           }
 
           _this.successOpen(card);
+
+          _this.setScore(true);
         }
       }
+
+      _this.model.checkFinishOrGameOver();
     });
   }
   /**
@@ -8829,15 +8929,27 @@ function () {
     value: function changeLevel(level) {
       this.stopTimer();
       this.model.openCards = [];
-      this.model.setLevel(level);
-      this.view.isFirst = true;
-      this.view.isBlock = false;
+      var status = this.model.setLevel(level);
+
+      if (status) {
+        this.router.push();
+        return;
+      }
+
       this.view.createGrid(this.model.getLevel().amountPair, this.model.getLevel().cardToCompare, this.model.getLevel().typesOfCars);
       this.view.setStyle(this.model.getLevel().amountColumn, this.model.getLevel().amountRow);
     }
+    /**
+     * 
+     * @param {Boolean} success 
+     * @return {void}
+     */
+
   }, {
     key: "setScore",
-    value: function setScore() {
+    value: function setScore(success) {
+      var increment = success ? this.model.getLevel().scoreSuccess : -this.model.getLevel().scoreOpen;
+      this.model.score = this.model.score + increment;
       this.view.setScore(this.model.score);
     }
     /**
@@ -8848,6 +8960,10 @@ function () {
   }, {
     key: "resetCards",
     value: function resetCards(card) {
+      if (this.status) {
+        return;
+      }
+
       this.view.hideCards([card].concat(_toConsumableArray(this.model.currentCard)));
       this.model.currentCard = [];
       this.view.isBlock = false;
@@ -8885,7 +9001,6 @@ function () {
       this.model.setOpenCards([card].concat(_toConsumableArray(this.model.currentCard)));
       this.model.currentCard = [];
       this.view.isBlock = false;
-      this.model.checkFinish();
     }
     /**
      * @return {void}
@@ -8916,20 +9031,211 @@ function () {
 
 var _default = Controller;
 exports.default = _default;
+},{}],"assets/scripts/Router.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Router =
+/*#__PURE__*/
+function () {
+  function Router() {
+    var routes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+    _classCallCheck(this, Router);
+
+    this.routes = routes;
+    this.init();
+  }
+
+  _createClass(Router, [{
+    key: "init",
+    value: function init() {
+      var _this = this;
+
+      window.addEventListener('load', function () {
+        var callback = _this.getComponent();
+
+        if (callback) {
+          callback(_this);
+        }
+      });
+      window.onpopstate = this.fire.bind(this);
+    }
+  }, {
+    key: "fire",
+    value: function fire(params) {
+      var callback = this.getComponent();
+
+      if (callback) {
+        callback(this, params);
+      }
+    }
+  }, {
+    key: "push",
+    value: function push(route, params) {
+      if (typeof route === 'string') {
+        history.pushState({}, 'title', route);
+      }
+
+      if (_typeof(route) === 'object' && route.name) {
+        var component = this.routes.find(function (item) {
+          return item.name === route.name;
+        });
+        history.pushState({}, component.name || 'title', component.path);
+      }
+
+      this.fire(params);
+    }
+  }, {
+    key: "getComponent",
+    value: function getComponent() {
+      var currentPath = window.location.pathname;
+      var route = this.routes.find(function (item) {
+        return item.path === currentPath;
+      });
+      return route.component;
+    }
+  }]);
+
+  return Router;
+}();
+
+var _default = Router;
+exports.default = _default;
+},{}],"assets/scripts/View/ViewGameOver.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function createInnerStructure(arrayCharts, cofDelay) {
+  var fragment = document.createDocumentFragment();
+
+  for (var index in arrayCharts) {
+    var chart = arrayCharts[index];
+    var innerNode = document.createElement('span');
+    innerNode.style.animationDelay = index * cofDelay + 'ms';
+    innerNode.innerHTML = chart;
+
+    if (chart === ' ') {
+      innerNode.innerHTML = '&nbsp;';
+    }
+
+    fragment.appendChild(innerNode);
+  }
+
+  return fragment;
+}
+
+var ViewGameOver =
+/*#__PURE__*/
+function () {
+  function ViewGameOver(root, router) {
+    _classCallCheck(this, ViewGameOver);
+
+    this.router = router;
+    root.innerHTML = "\n            <div class=\"game_over\">\n                <h1></h1>\n                <a href=\"/\" class=\"refresh\">try again</a>\n            </div>\n        ";
+    this.animateView();
+  }
+
+  _createClass(ViewGameOver, [{
+    key: "animateView",
+    value: function animateView() {
+      var _this = this;
+
+      var wrapper = document.querySelector('.game_over h1');
+      wrapper.appendChild(createInnerStructure('GAME OVER', 200));
+      var link = document.querySelector('a');
+      link.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        _this.router.push('/');
+      });
+    }
+  }]);
+
+  return ViewGameOver;
+}();
+
+var _default = ViewGameOver;
+exports.default = _default;
+},{}],"assets/scripts/Controller/StatisticController.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var StatisticController = function StatisticController() {
+  _classCallCheck(this, StatisticController);
+};
+
+var _default = StatisticController;
+exports.default = _default;
 },{}],"assets/scripts/app.js":[function(require,module,exports) {
 "use strict";
 
-var _View = _interopRequireDefault(require("./View"));
+var _View = _interopRequireDefault(require("./View/View"));
 
-var _Model = _interopRequireDefault(require("./Model"));
+var _Model = _interopRequireDefault(require("./Model/Model"));
 
-var _Controller = _interopRequireDefault(require("./Controller"));
+var _Controller = _interopRequireDefault(require("./Controller/Controller"));
+
+var _Router = _interopRequireDefault(require("./Router"));
+
+var _ViewGameOver = _interopRequireDefault(require("./View/ViewGameOver"));
+
+var _StatisticController = _interopRequireDefault(require("./Controller/StatisticController"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var isFirst = false;
-var app = new _Controller.default(new _Model.default(), new _View.default());
-},{"./View":"assets/scripts/View.js","./Model":"assets/scripts/Model.js","./Controller":"assets/scripts/Controller.js"}],"assets/scripts/index.js":[function(require,module,exports) {
+var routesEnum = [{
+  name: 'START',
+  path: '/',
+  component: function component(router) {
+    var root = document.getElementById('app');
+    new _Controller.default(new _Model.default(), new _View.default(root), router);
+  }
+}, {
+  name: 'GAME_OVER',
+  path: '/game_over',
+  component: function component(router) {
+    var root = document.getElementById('app');
+    new _ViewGameOver.default(root, router);
+  }
+}, {
+  name: 'STATISTIC',
+  path: '/statistic',
+  component: function component(router, params) {
+    var root = document.getElementById('app');
+    new _StatisticController.default(root, router);
+  }
+}];
+new _Router.default(routesEnum);
+},{"./View/View":"assets/scripts/View/View.js","./Model/Model":"assets/scripts/Model/Model.js","./Controller/Controller":"assets/scripts/Controller/Controller.js","./Router":"assets/scripts/Router.js","./View/ViewGameOver":"assets/scripts/View/ViewGameOver.js","./Controller/StatisticController":"assets/scripts/Controller/StatisticController.js"}],"assets/scripts/index.js":[function(require,module,exports) {
 "use strict";
 
 require("babel-polyfill");
@@ -8965,7 +9271,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36123" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "37349" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

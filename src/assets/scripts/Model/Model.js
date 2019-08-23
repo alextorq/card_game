@@ -1,4 +1,4 @@
-import PublisherSubscriber from './PubSub';
+import PublisherSubscriber from '../PubSub';
 
 
 class Model {
@@ -23,93 +23,108 @@ class Model {
 				cardToCompare: 2,
 				scoreOpen: 5,
 				scoreSuccess: 10,
+				optionalScore: 60,
 				typesOfCars: [
 					{
 						name: 'vue',
-						image: 'assets/image/vue.svg'
+						image: 'assets/image/witcher/witcher_1.jpg'
 					},
 					{
 						name: 'aurelia',
-						image: 'assets/image/aurelia.svg'
+						image: 'assets/image/witcher/witcher_2.jpg'
 					},
 					{
 						name: 'angular',
-						image: "assets/image/angular.svg"
+						image: 'assets/image/witcher/witcher_3.jpg'
 					},
 					{
 						name: 'backbone',
-						image: "assets/image/backbone.svg"
+						image: 'assets/image/witcher/witcher_4.jpg'
 					},
 					{
 						name: 'ember',
-						image: "assets/image/ember.svg"
+						image: 'assets/image/witcher/witcher_5.jpg'
 					}
 				]
 			},
 			{
-				amountColumn: 8,
-				amountRow: 4,
-				amountPair: 2,
+				amountColumn: 6,
+				amountRow: 3,
+				amountPair: 1,
 				cardToCompare: 3,
 				scoreOpen: 5,
 				scoreSuccess: 10,
+				optionalScore: 60,
 				typesOfCars: [
 					{
-						name: 'witcher_1',
-						image: 'assets/image/witcher_1.jpg'
+						name: 'vue',
+						image: 'assets/image/witcher/witcher_1.jpg'
 					},
 					{
 						name: 'aurelia',
-						image: 'assets/image/aurelia.svg'
+						image: 'assets/image/witcher/witcher_2.jpg'
 					},
 					{
 						name: 'angular',
-						image: "assets/image/angular.svg"
+						image: 'assets/image/witcher/witcher_3.jpg'
 					},
 					{
 						name: 'backbone',
-						image: "assets/image/backbone.svg"
+						image: 'assets/image/witcher/witcher_4.jpg'
 					},
 					{
 						name: 'ember',
-						image: "assets/image/ember.svg"
+						image: 'assets/image/witcher/witcher_5.jpg'
+					},
+					{
+						name: 'sdd',
+						image: 'assets/image/witcher/witcher_6.jpg'
 					}
 				]
 			},
 			{
-				amountColumn: 5,
-				amountRow: 5,
-				amountPair: 5,
+				amountColumn: 7,
+				amountRow: 4,
+				amountPair: 1,
 				cardToCompare: 4,
 				scoreOpen: 5,
-				scoreSuccess: 10,
+				scoreSuccess: 15,
+				optionalScore: 150,
 				typesOfCars: [
 					{
 						name: 'vue',
-						image: 'assets/image/vue.svg'
+						image: 'assets/image/witcher/witcher_11.jpg'
 					},
 					{
 						name: 'aurelia',
-						image: 'assets/image/aurelia.svg'
+						image: 'assets/image/witcher/witcher_12.jpg'
 					},
 					{
 						name: 'angular',
-						image: "assets/image/angular.svg"
+						image: 'assets/image/witcher/witcher_10.jpg'
 					},
 					{
 						name: 'backbone',
-						image: "assets/image/backbone.svg"
+						image: 'assets/image/witcher/witcher_9.jpg'
 					},
 					{
 						name: 'ember',
-						image: "assets/image/ember.svg"
+						image: 'assets/image/witcher/witcher_8.jpg'
+					},
+					{
+						name: 'sdd',
+						image: 'assets/image/witcher/witcher_7.jpg'
+					},
+					{
+						name: 'sdd',
+						image: 'assets/image/witcher/witcher_6.jpg'
 					}
 				]
 			}
 		];
 		this.currentLevel = 0;
 		this.time = 0;
-		this.score = 100;
+		this.score = 0;
 	}
 
 	/**
@@ -122,22 +137,33 @@ class Model {
 
 	/**
 	 * @param {Number} level 
-	 * @return {void}
+	 * @return {Boolean}
 	 */
 	setLevel(level) {
+		if (level > this.levels.length - 1) {
+			return true;
+		}
 		this.currentLevel = level;
+		this.score = this.score + this.getLevel().optionalScore;
+		return false;
 	}
 
 	/**
 	 * @return {void}
 	 */
-	checkFinish() {
-		let level = this.getLevel()
+	checkFinishOrGameOver() {
+		if (!this.score) {
+			this.event.fireEvent('game_over', level);
+			return;
+		}
+
+		let level = this.getLevel();
 		let status =  (level.amountPair * level.cardToCompare * level.typesOfCars.length) === this.openCards.length;
 		if (status) {
-			this.event.fireEvent('finish', level)
+			this.event.fireEvent('finish', level);
 		}
 	}
+
 	/**
 	 * @param {Array} cards
 	 * @return {void} 
