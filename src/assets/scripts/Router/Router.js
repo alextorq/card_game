@@ -22,6 +22,13 @@ class Router {
             callback(this, params);
         }
     }
+
+    /**
+     * 
+     * @param {String|Object} route 
+     * @param {any} params 
+     * @return {void}
+     */
     push(route, params) {
         if (typeof route === 'string') {
             history.pushState({}, 'title', route);

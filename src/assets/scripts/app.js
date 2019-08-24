@@ -1,10 +1,10 @@
 import View from './View/View';
 import Model from './Model/Model';
 import Controller from './Controller/Controller';
-import Router from './Router';
+import Router from './Router/Router';
 import GAME_OVER from './View/ViewGameOver';
 import STATISTIC from './Controller/StatisticController';
-import ViewsStatistic from './Controller/StatisticController';
+import ViewsStatistic from './View/ViewsStatistic';
 
 let routesEnum = [
         {
@@ -28,7 +28,7 @@ let routesEnum = [
             path: '/statistic',
             component: function(router, params) {
                 let root = document.getElementById('app');
-                new STATISTIC(root, router);
+                new STATISTIC(new ViewsStatistic(root), router, params);
             }
         }
     ];

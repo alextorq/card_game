@@ -8,8 +8,6 @@
     padding: 0;
     margin: 0;
     box-sizing: border-box;
-    font-size: 0;
-    line-height: 0;
   }
   
   html {
@@ -149,6 +147,8 @@
       animation: animate 2.5s infinite ease-in-out;
     }
   }
+
+  // не opacity хоть это и не composit only props
     
   @keyframes animate {
     0% {

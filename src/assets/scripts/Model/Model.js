@@ -1,4 +1,4 @@
-import PublisherSubscriber from '../PubSub';
+import PublisherSubscriber from '../Utils/PubSub';
 
 
 class Model {

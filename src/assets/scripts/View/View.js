@@ -1,4 +1,4 @@
-import PublisherSubscriber from '../PubSub';
+import PublisherSubscriber from '../Utils/PubSub';
 import  rn  from 'random-number';
 
 /**
@@ -76,10 +76,6 @@ class View {
 			item.querySelector('.front-face').src = item.imageCard;
 			item.classList.add('open');
 			item.classList.remove('active');
-			// setTimeout(() => {
-			// 	// item.classList.add('transition-top');
-			
-			// }, 20);
 		});
 	}
 	hideCards(cards) {

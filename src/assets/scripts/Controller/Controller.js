@@ -1,25 +1,35 @@
+import Throttle from '../Utils/Throttle';
+
 const TIME_TO_OPEN = 1300;
+const TIME_TO_SHOW_ALL = 10000;
 
 class Controller {
 	constructor(model, view, router) {
 		this.model = model;
 		this.view = view;
 		this.router = router;
-		this.status = false;
+		this.throttle = new Throttle(TIME_TO_OPEN);
 		this.changeLevel(0);
 
 		this.model.event.addListener('finish', () => {
+			if (this.model.currentLevel === this.model.levels.length - 1) {
+				this.router.push({
+					name: 'statistic'
+				}, this.model);
+				return;
+			}
 			this.changeLevel(this.model.currentLevel + 1);
 		});
 
 		this.model.event.addListener('game_over', () => {
-			this.status = true;
+			this.stopTimer();
 			this.view.showAllCards();
-			setTimeout(() => {
-				this.view.reset(true);
-				this.stopTimer();
-				this.router.push({name: 'GAME_OVER'});
-			}, 5000);
+			this.throttle.delay(
+				() => {
+					this.view.reset(true);
+					this.router.push({name: 'GAME_OVER'});
+				}
+			, TIME_TO_SHOW_ALL);
 		});
 		
 
@@ -41,9 +51,10 @@ class Controller {
 				let status = this.compareCard(card);
 				if (!status) {
 					this.view.isBlock = true;
-					setTimeout(() => {
-						this.resetCards(card);
-					}, TIME_TO_OPEN);
+					this.throttle.delay(() => {this.resetCards(card)});
+					// setTimeout(() => {
+					// 	;
+					// }, TIME_TO_OPEN);
 				} else {
 					// проверяем если количество карт недостаточно для полного открытия карт 
 					// добавляем их в пару и выходим
@@ -66,13 +77,7 @@ class Controller {
 	changeLevel(level) {
 		this.stopTimer();
 		this.model.openCards = [];
-
-
-		let status = this.model.setLevel(level);
-		if (status) {
-			this.router.push();
-			return;
-		}
+		this.model.setLevel(level);
 
 		this.view.createGrid(
 			this.model.getLevel().amountPair, 
@@ -103,7 +108,6 @@ class Controller {
 	 * @return {void} 
 	 */
 	resetCards(card) {
-		if (this.status) {return;}
 		this.view.hideCards([card, ...this.model.currentCard]);
 		this.model.currentCard = [];
 		this.view.isBlock = false;
