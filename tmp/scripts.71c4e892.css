@@ -192,5 +192,64 @@ body {
   opacity: 0.4;
   text-decoration: none; }
 
+#images {
+  visibility: hidden;
+  position: absolute;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  font-size: 0;
+  line-height: 0;
+  z-index: -100;
+  overflow: hidden; }
+
+.statistic__list {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 60px;
+  margin-bottom: 60px;
+  border: 1px solid #00ff7f;
+  overflow: hidden; }
+  .statistic__list td {
+    border: 1px solid #00ff7f;
+    border-collapse: collapse;
+    padding: 5px; }
+
+.statistic__list_body {
+  margin-left: auto;
+  margin-right: auto;
+  color: white;
+  list-style: none;
+  overflow: auto;
+  height: 100%; }
+
+.statistic__item {
+  color: #00ff7f;
+  font-size: 20px;
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  transition: all 0.4s;
+  -webkit-transform: translateY(0);
+      -ms-transform: translateY(0);
+          transform: translateY(0);
+  opacity: 1; }
+  .statistic__item:first-child {
+    margin-bottom: 15px;
+    font-style: italic;
+    font-size: 25px; }
+  .statistic__item.transition-up {
+    -webkit-transform: translateY(100%);
+        -ms-transform: translateY(100%);
+            transform: translateY(100%);
+    opacity: 0; }
+  .statistic__item.self {
+    color: red; }
+
+.statistic__title {
+  color: #00ff7f;
+  font-size: 5vw;
+  text-align: center; }
+
 
 /*# sourceMappingURL=/scripts.71c4e892.css.map */

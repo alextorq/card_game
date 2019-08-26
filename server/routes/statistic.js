@@ -25,10 +25,9 @@ router.get('/all',  async function (request, response) {
 });
 
 
-
 router.post('/new',  async function (request, response) {
     try {
-        let results = await Users.find();
+        let results = await Users.create(request.body);
         response.send(results);
     }catch (err) {
         errorHandler(err, response);

@@ -12,7 +12,7 @@ class Router {
             }
         });
 
-        window.onpopstate = this.fire.bind(this);
+        window.onpopstate = () => {this.fire(null)};
     }
 
 
@@ -33,8 +33,9 @@ class Router {
         if (typeof route === 'string') {
             history.pushState({}, 'title', route);
         }
+       
        if (typeof route === 'object' && route.name) {
-            let component = this.routes.find((item) => {
+             let component = this.routes.find((item) => {
                 return item.name === route.name;
             });
             history.pushState({}, component.name || 'title', component.path);

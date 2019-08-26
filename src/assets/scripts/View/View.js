@@ -19,6 +19,7 @@ class View {
 
 	createWrapper() {
 		this.root.innerHTML = `
+			<div id="images"></div>
 			<section class="memory-game">
 			</section>
 	
@@ -92,9 +93,11 @@ class View {
 	 * @param {Array} typesOfCars 
 	 */
 	createImage(typesOfCars) {
+		let imageWrap = document.getElementById('images');
 		for (let type of typesOfCars) {
 			let image = new Image();
 			image.src = type.image;
+			imageWrap.appendChild(image);
 		}
 	}
 

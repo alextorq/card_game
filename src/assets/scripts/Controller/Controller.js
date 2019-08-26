@@ -1,7 +1,7 @@
 import Throttle from '../Utils/Throttle';
 
 const TIME_TO_OPEN = 1300;
-const TIME_TO_SHOW_ALL = 10000;
+const TIME_TO_SHOW_ALL = 5000;
 
 class Controller {
 	constructor(model, view, router) {
@@ -12,10 +12,13 @@ class Controller {
 		this.changeLevel(0);
 
 		this.model.event.addListener('finish', () => {
+			this.stopTimer();
 			if (this.model.currentLevel === this.model.levels.length - 1) {
-				this.router.push({
-					name: 'statistic'
-				}, this.model);
+				this.throttle.delay(() => {
+					this.router.push({
+						name: 'STATISTIC'
+					}, this.model);
+				}, TIME_TO_SHOW_ALL / 2);
 				return;
 			}
 			this.changeLevel(this.model.currentLevel + 1);
@@ -38,6 +41,9 @@ class Controller {
 		});
 
 		this.view.event.addListener('selectCard', (card) => {
+
+			//TODO попробывать написать с помощью FSM
+
 			// Если карта уже открыта то выходим 
 			if (this.checkSelected(card)) {return;}
 
@@ -51,10 +57,7 @@ class Controller {
 				let status = this.compareCard(card);
 				if (!status) {
 					this.view.isBlock = true;
-					this.throttle.delay(() => {this.resetCards(card)});
-					// setTimeout(() => {
-					// 	;
-					// }, TIME_TO_OPEN);
+					this.throttle.delay(() => {this.resetCards(card);});
 				} else {
 					// проверяем если количество карт недостаточно для полного открытия карт 
 					// добавляем их в пару и выходим

@@ -2,37 +2,63 @@ class ViewsStatistic {
     constructor(root) {
         this.root = root;
         this.root.innerHTML = `
-            <ul class="statistic__list">
-            </ul>
+            <h1 class="statistic__title">Statistic</h1>
+            <table class="statistic__list">
+            <tbody class="statistic__list_body"> 
+                <tr class="statistic__item">
+                    <td class="name">Name</td>
+                    <td class="time">Time</td>
+                    <td class="score">Score</td>
+                </tr>
+            </tbody> 
+            </table>
         `;
     }
 	/**
 	 * 
 	 * @param {Object} user 
+	 * @param {String|undefined} uuid 
 	 * @return {Object} 
 	 */
-	createItem(user) {
+	createItem(user, uuid) {
 		let template = `
-        <li class="statistic__list">
-            <div class="name">name_</div>
-            <div class="time">time_</div>
-            <div class="score">score_</div>
-        </li>
+        <tr class="statistic__item transition-up"> 
+            <td class="name">name_</td>
+            <td class="time">time_</td>
+            <td class="score">score_</td>
+        </tr>
 		`;
-        let itemWrapper = document.createElement('div');
+        let itemWrapperTable = document.createElement('table');
+        let itemWrapper = document.createElement('tbody');
+        itemWrapperTable.appendChild(itemWrapper);
         let str = template.replace('name_', user.name);
         str = str.replace('time_', user.time);
         str = str.replace('score_', user.score);
 		itemWrapper.innerHTML = str;
-		let item = itemWrapper.firstElementChild;
+        let item = itemWrapper.firstElementChild;
+        if (uuid && uuid === user.uuid) {
+            item.classList.add('self');
+        }
 		return item;
     }
 
-    showStatistic(users) {
-        let wrapper = document.querySelector('.statistic__list');
+    showFormForName() {
+        let name = prompt('enter your name');
+        return name;
+    }
+
+    showStatistic(users, uuid) {
+        let wrapper = document.querySelector('.statistic__list_body');
         for (const user of users) {
-            wrapper.appendChild(this.createItem(user));
+            wrapper.appendChild(this.createItem(user, uuid));
         }
+        let allTR = document.querySelectorAll('.statistic__item');
+        setTimeout(() => {
+            for (const tr of allTR) {
+                tr.classList.remove('transition-up');
+            }
+        }, 200);
+   
     }
 }
 

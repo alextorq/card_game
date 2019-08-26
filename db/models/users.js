@@ -13,6 +13,10 @@ const userScheme = new Schema({
     score: {
       type: String,
       required: true
+    },
+    uuid: {
+      type: String,
+      required: true
     }
 }, { autoIndex: false, versionKey: false });
 

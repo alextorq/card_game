@@ -8373,7 +8373,7 @@ function () {
   _createClass(View, [{
     key: "createWrapper",
     value: function createWrapper() {
-      this.root.innerHTML = "\n\t\t\t<section class=\"memory-game\">\n\t\t\t</section>\n\t\n\t\t\t<div class=\"analytics\">\n\t\t\t\t<div>\n\t\t\t\t\tTIME:\n\t\t\t\t\t<span id=\"time\" class=\"time\">0</span>\n\t\t\t\t</div>\n\t\t\t\t<div>\n\t\t\t\t\tSCORE\n\t\t\t\t\t<span id=\"score\" class=\"score\">0</span>\n\t\t\t\t</div>\n\t\t\t</div>";
+      this.root.innerHTML = "\n\t\t\t<div id=\"images\"></div>\n\t\t\t<section class=\"memory-game\">\n\t\t\t</section>\n\t\n\t\t\t<div class=\"analytics\">\n\t\t\t\t<div>\n\t\t\t\t\tTIME:\n\t\t\t\t\t<span id=\"time\" class=\"time\">0</span>\n\t\t\t\t</div>\n\t\t\t\t<div>\n\t\t\t\t\tSCORE\n\t\t\t\t\t<span id=\"score\" class=\"score\">0</span>\n\t\t\t\t</div>\n\t\t\t</div>";
       this.cardWrapper = document.querySelector('.memory-game');
     }
     /**
@@ -8450,6 +8450,7 @@ function () {
   }, {
     key: "createImage",
     value: function createImage(typesOfCars) {
+      var imageWrap = document.getElementById('images');
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
       var _iteratorError = undefined;
@@ -8459,6 +8460,7 @@ function () {
           var type = _step.value;
           var image = new Image();
           image.src = type.image;
+          imageWrap.appendChild(image);
         }
       } catch (err) {
         _didIteratorError = true;
@@ -8682,63 +8684,6 @@ function () {
         name: 'ember',
         image: 'assets/image/witcher/witcher_5.jpg'
       }]
-    }, {
-      amountColumn: 6,
-      amountRow: 3,
-      amountPair: 1,
-      cardToCompare: 3,
-      scoreOpen: 5,
-      scoreSuccess: 10,
-      optionalScore: 60,
-      typesOfCars: [{
-        name: 'vue',
-        image: 'assets/image/witcher/witcher_1.jpg'
-      }, {
-        name: 'aurelia',
-        image: 'assets/image/witcher/witcher_2.jpg'
-      }, {
-        name: 'angular',
-        image: 'assets/image/witcher/witcher_3.jpg'
-      }, {
-        name: 'backbone',
-        image: 'assets/image/witcher/witcher_4.jpg'
-      }, {
-        name: 'ember',
-        image: 'assets/image/witcher/witcher_5.jpg'
-      }, {
-        name: 'sdd',
-        image: 'assets/image/witcher/witcher_6.jpg'
-      }]
-    }, {
-      amountColumn: 7,
-      amountRow: 4,
-      amountPair: 1,
-      cardToCompare: 4,
-      scoreOpen: 5,
-      scoreSuccess: 15,
-      optionalScore: 150,
-      typesOfCars: [{
-        name: 'vue',
-        image: 'assets/image/witcher/witcher_11.jpg'
-      }, {
-        name: 'aurelia',
-        image: 'assets/image/witcher/witcher_12.jpg'
-      }, {
-        name: 'angular',
-        image: 'assets/image/witcher/witcher_10.jpg'
-      }, {
-        name: 'backbone',
-        image: 'assets/image/witcher/witcher_9.jpg'
-      }, {
-        name: 'ember',
-        image: 'assets/image/witcher/witcher_8.jpg'
-      }, {
-        name: 'sdd',
-        image: 'assets/image/witcher/witcher_7.jpg'
-      }, {
-        name: 'sdd',
-        image: 'assets/image/witcher/witcher_6.jpg'
-      }]
     }];
     this.currentLevel = 0;
     this.time = 0;
@@ -8884,7 +8829,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 var TIME_TO_OPEN = 1300;
-var TIME_TO_SHOW_ALL = 10000;
+var TIME_TO_SHOW_ALL = 5000;
 
 var Controller =
 /*#__PURE__*/
@@ -8900,10 +8845,14 @@ function () {
     this.throttle = new _Throttle.default(TIME_TO_OPEN);
     this.changeLevel(0);
     this.model.event.addListener('finish', function () {
+      _this.stopTimer();
+
       if (_this.model.currentLevel === _this.model.levels.length - 1) {
-        _this.router.push({
-          name: 'statistic'
-        }, _this.model);
+        _this.throttle.delay(function () {
+          _this.router.push({
+            name: 'STATISTIC'
+          }, _this.model);
+        }, TIME_TO_SHOW_ALL / 2);
 
         return;
       }
@@ -8927,6 +8876,7 @@ function () {
       _this.startTimer();
     });
     this.view.event.addListener('selectCard', function (card) {
+      //TODO попробывать написать с помощью FSM
       // Если карта уже открыта то выходим 
       if (_this.checkSelected(card)) {
         return;
@@ -8947,10 +8897,7 @@ function () {
 
           _this.throttle.delay(function () {
             _this.resetCards(card);
-          }); // setTimeout(() => {
-          // 	;
-          // }, TIME_TO_OPEN);
-
+          });
         } else {
           // проверяем если количество карт недостаточно для полного открытия карт 
           // добавляем их в пару и выходим
@@ -9112,7 +9059,10 @@ function () {
           callback(_this);
         }
       });
-      window.onpopstate = this.fire.bind(this);
+
+      window.onpopstate = function () {
+        _this.fire(null);
+      };
     }
   }, {
     key: "fire",
@@ -10948,7 +10898,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var api = {
-  prefix: 'http://127.0.0.1:4000/',
+  prefix: "development" === 'development' ? 'http://192.168.81.253:4000/' : '',
   statistic: {
     all: 'statistic/all',
     create: 'statistic/new'
@@ -10956,7 +10906,221 @@ var api = {
 };
 var _default = api;
 exports.default = _default;
-},{}],"assets/scripts/Controller/StatisticController.js":[function(require,module,exports) {
+},{}],"../node_modules/uuid/lib/rng-browser.js":[function(require,module,exports) {
+// Unique ID creation requires a high quality random # generator.  In the
+// browser this is a little complicated due to unknown quality of Math.random()
+// and inconsistent support for the `crypto` API.  We do the best we can via
+// feature-detection
+
+// getRandomValues needs to be invoked in a context where "this" is a Crypto
+// implementation. Also, find the complete implementation of crypto on IE11.
+var getRandomValues = (typeof(crypto) != 'undefined' && crypto.getRandomValues && crypto.getRandomValues.bind(crypto)) ||
+                      (typeof(msCrypto) != 'undefined' && typeof window.msCrypto.getRandomValues == 'function' && msCrypto.getRandomValues.bind(msCrypto));
+
+if (getRandomValues) {
+  // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
+  var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef
+
+  module.exports = function whatwgRNG() {
+    getRandomValues(rnds8);
+    return rnds8;
+  };
+} else {
+  // Math.random()-based (RNG)
+  //
+  // If all else fails, use Math.random().  It's fast, but is of unspecified
+  // quality.
+  var rnds = new Array(16);
+
+  module.exports = function mathRNG() {
+    for (var i = 0, r; i < 16; i++) {
+      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
+      rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
+    }
+
+    return rnds;
+  };
+}
+
+},{}],"../node_modules/uuid/lib/bytesToUuid.js":[function(require,module,exports) {
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+var byteToHex = [];
+for (var i = 0; i < 256; ++i) {
+  byteToHex[i] = (i + 0x100).toString(16).substr(1);
+}
+
+function bytesToUuid(buf, offset) {
+  var i = offset || 0;
+  var bth = byteToHex;
+  // join used to fix memory issue caused by concatenation: https://bugs.chromium.org/p/v8/issues/detail?id=3175#c4
+  return ([bth[buf[i++]], bth[buf[i++]], 
+	bth[buf[i++]], bth[buf[i++]], '-',
+	bth[buf[i++]], bth[buf[i++]], '-',
+	bth[buf[i++]], bth[buf[i++]], '-',
+	bth[buf[i++]], bth[buf[i++]], '-',
+	bth[buf[i++]], bth[buf[i++]],
+	bth[buf[i++]], bth[buf[i++]],
+	bth[buf[i++]], bth[buf[i++]]]).join('');
+}
+
+module.exports = bytesToUuid;
+
+},{}],"../node_modules/uuid/v1.js":[function(require,module,exports) {
+var rng = require('./lib/rng');
+var bytesToUuid = require('./lib/bytesToUuid');
+
+// **`v1()` - Generate time-based UUID**
+//
+// Inspired by https://github.com/LiosK/UUID.js
+// and http://docs.python.org/library/uuid.html
+
+var _nodeId;
+var _clockseq;
+
+// Previous uuid creation time
+var _lastMSecs = 0;
+var _lastNSecs = 0;
+
+// See https://github.com/broofa/node-uuid for API details
+function v1(options, buf, offset) {
+  var i = buf && offset || 0;
+  var b = buf || [];
+
+  options = options || {};
+  var node = options.node || _nodeId;
+  var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq;
+
+  // node and clockseq need to be initialized to random values if they're not
+  // specified.  We do this lazily to minimize issues related to insufficient
+  // system entropy.  See #189
+  if (node == null || clockseq == null) {
+    var seedBytes = rng();
+    if (node == null) {
+      // Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
+      node = _nodeId = [
+        seedBytes[0] | 0x01,
+        seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]
+      ];
+    }
+    if (clockseq == null) {
+      // Per 4.2.2, randomize (14 bit) clockseq
+      clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 0x3fff;
+    }
+  }
+
+  // UUID timestamps are 100 nano-second units since the Gregorian epoch,
+  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
+  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
+  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
+  var msecs = options.msecs !== undefined ? options.msecs : new Date().getTime();
+
+  // Per 4.2.1.2, use count of uuid's generated during the current clock
+  // cycle to simulate higher resolution clock
+  var nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1;
+
+  // Time since last uuid creation (in msecs)
+  var dt = (msecs - _lastMSecs) + (nsecs - _lastNSecs)/10000;
+
+  // Per 4.2.1.2, Bump clockseq on clock regression
+  if (dt < 0 && options.clockseq === undefined) {
+    clockseq = clockseq + 1 & 0x3fff;
+  }
+
+  // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
+  // time interval
+  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
+    nsecs = 0;
+  }
+
+  // Per 4.2.1.2 Throw error if too many uuids are requested
+  if (nsecs >= 10000) {
+    throw new Error('uuid.v1(): Can\'t create more than 10M uuids/sec');
+  }
+
+  _lastMSecs = msecs;
+  _lastNSecs = nsecs;
+  _clockseq = clockseq;
+
+  // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
+  msecs += 12219292800000;
+
+  // `time_low`
+  var tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
+  b[i++] = tl >>> 24 & 0xff;
+  b[i++] = tl >>> 16 & 0xff;
+  b[i++] = tl >>> 8 & 0xff;
+  b[i++] = tl & 0xff;
+
+  // `time_mid`
+  var tmh = (msecs / 0x100000000 * 10000) & 0xfffffff;
+  b[i++] = tmh >>> 8 & 0xff;
+  b[i++] = tmh & 0xff;
+
+  // `time_high_and_version`
+  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
+  b[i++] = tmh >>> 16 & 0xff;
+
+  // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
+  b[i++] = clockseq >>> 8 | 0x80;
+
+  // `clock_seq_low`
+  b[i++] = clockseq & 0xff;
+
+  // `node`
+  for (var n = 0; n < 6; ++n) {
+    b[i + n] = node[n];
+  }
+
+  return buf ? buf : bytesToUuid(b);
+}
+
+module.exports = v1;
+
+},{"./lib/rng":"../node_modules/uuid/lib/rng-browser.js","./lib/bytesToUuid":"../node_modules/uuid/lib/bytesToUuid.js"}],"../node_modules/uuid/v4.js":[function(require,module,exports) {
+var rng = require('./lib/rng');
+var bytesToUuid = require('./lib/bytesToUuid');
+
+function v4(options, buf, offset) {
+  var i = buf && offset || 0;
+
+  if (typeof(options) == 'string') {
+    buf = options === 'binary' ? new Array(16) : null;
+    options = null;
+  }
+  options = options || {};
+
+  var rnds = options.random || (options.rng || rng)();
+
+  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+  rnds[6] = (rnds[6] & 0x0f) | 0x40;
+  rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+  // Copy bytes to buffer, if provided
+  if (buf) {
+    for (var ii = 0; ii < 16; ++ii) {
+      buf[i + ii] = rnds[ii];
+    }
+  }
+
+  return buf || bytesToUuid(rnds);
+}
+
+module.exports = v4;
+
+},{"./lib/rng":"../node_modules/uuid/lib/rng-browser.js","./lib/bytesToUuid":"../node_modules/uuid/lib/bytesToUuid.js"}],"../node_modules/uuid/index.js":[function(require,module,exports) {
+var v1 = require('./v1');
+var v4 = require('./v4');
+
+var uuid = v4;
+uuid.v1 = v1;
+uuid.v4 = v4;
+
+module.exports = uuid;
+
+},{"./v1":"../node_modules/uuid/v1.js","./v4":"../node_modules/uuid/v4.js"}],"assets/scripts/Controller/StatisticController.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10967,6 +11131,8 @@ exports.default = void 0;
 var _axios = _interopRequireDefault(require("axios"));
 
 var _api = _interopRequireDefault(require("../api"));
+
+var _uuid = _interopRequireDefault(require("uuid"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -10986,35 +11152,64 @@ function () {
     this.view = view;
     this.router = router;
     this.model = model ? model : null;
-    this.loadList();
     this.saveUser();
   }
 
   _createClass(StatisticController, [{
     key: "loadList",
-    value: function loadList() {
+    value: function loadList(id) {
       var _this = this;
 
       _axios.default.get(_api.default.prefix + _api.default.statistic.all).then(function (response) {
-        _this.list = response.data;
+        _this.list = response.data.sort(_this.sort);
 
-        _this.view.showStatistic(_this.list);
+        _this.view.showStatistic(_this.list, id);
       }).catch(function () {});
+    }
+  }, {
+    key: "sort",
+    value: function sort(a, b) {
+      var ratingA = a.score / a.time;
+      var ratingB = b.score / b.time;
+      return ratingA - ratingB;
     }
   }, {
     key: "askName",
     value: function askName() {
-      this.name = '';
+      this.name = this.view.showFormForName() || 'undefined_cat';
+    }
+  }, {
+    key: "setUuidToLocalStorage",
+    value: function setUuidToLocalStorage(id) {
+      localStorage.setItem('uuid', id);
+    }
+  }, {
+    key: "getUuidFromLocalStorage",
+    value: function getUuidFromLocalStorage() {
+      return localStorage.getItem('uuid') || null;
     }
   }, {
     key: "saveUser",
     value: function saveUser() {
+      var _this2 = this;
+
       if (this.model) {
+        this.askName();
+        var id = (0, _uuid.default)();
+        this.setUuidToLocalStorage(id);
+
         _axios.default.post(_api.default.prefix + _api.default.statistic.create, {
           time: this.model.time,
           name: this.name,
-          score: this.model.score
-        }).then(function () {}).catch(function () {});
+          score: this.model.score,
+          uuid: id
+        }).then(function () {
+          _this2.loadList(id);
+        }).catch(function () {
+          alert('something went wrong');
+        });
+      } else {
+        this.loadList(this.getUuidFromLocalStorage());
       }
     }
   }]);
@@ -11024,7 +11219,7 @@ function () {
 
 var _default = StatisticController;
 exports.default = _default;
-},{"axios":"../node_modules/axios/index.js","../api":"assets/scripts/api.js"}],"assets/scripts/View/ViewsStatistic.js":[function(require,module,exports) {
+},{"axios":"../node_modules/axios/index.js","../api":"assets/scripts/api.js","uuid":"../node_modules/uuid/index.js"}],"assets/scripts/View/ViewsStatistic.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11045,31 +11240,45 @@ function () {
     _classCallCheck(this, ViewsStatistic);
 
     this.root = root;
-    this.root.innerHTML = "\n            <ul class=\"statistic__list\">\n            </ul>\n        ";
+    this.root.innerHTML = "\n            <h1 class=\"statistic__title\">Statistic</h1>\n            <table class=\"statistic__list\">\n            <tbody class=\"statistic__list_body\"> \n                <tr class=\"statistic__item\">\n                    <td class=\"name\">Name</td>\n                    <td class=\"time\">Time</td>\n                    <td class=\"score\">Score</td>\n                </tr>\n            </tbody> \n            </table>\n        ";
   }
   /**
    * 
    * @param {Object} user 
+   * @param {String|undefined} uuid 
    * @return {Object} 
    */
 
 
   _createClass(ViewsStatistic, [{
     key: "createItem",
-    value: function createItem(user) {
-      var template = "\n        <li class=\"statistic__list\">\n            <div class=\"name\">name_</div>\n            <div class=\"time\">time_</div>\n            <div class=\"score\">score_</div>\n        </li>\n\t\t";
-      var itemWrapper = document.createElement('div');
+    value: function createItem(user, uuid) {
+      var template = "\n        <tr class=\"statistic__item transition-up\"> \n            <td class=\"name\">name_</td>\n            <td class=\"time\">time_</td>\n            <td class=\"score\">score_</td>\n        </tr>\n\t\t";
+      var itemWrapperTable = document.createElement('table');
+      var itemWrapper = document.createElement('tbody');
+      itemWrapperTable.appendChild(itemWrapper);
       var str = template.replace('name_', user.name);
       str = str.replace('time_', user.time);
       str = str.replace('score_', user.score);
       itemWrapper.innerHTML = str;
       var item = itemWrapper.firstElementChild;
+
+      if (uuid && uuid === user.uuid) {
+        item.classList.add('self');
+      }
+
       return item;
     }
   }, {
+    key: "showFormForName",
+    value: function showFormForName() {
+      var name = prompt('enter your name');
+      return name;
+    }
+  }, {
     key: "showStatistic",
-    value: function showStatistic(users) {
-      var wrapper = document.querySelector('.statistic__list');
+    value: function showStatistic(users, uuid) {
+      var wrapper = document.querySelector('.statistic__list_body');
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
       var _iteratorError = undefined;
@@ -11077,7 +11286,7 @@ function () {
       try {
         for (var _iterator = users[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var user = _step.value;
-          wrapper.appendChild(this.createItem(user));
+          wrapper.appendChild(this.createItem(user, uuid));
         }
       } catch (err) {
         _didIteratorError = true;
@@ -11093,6 +11302,33 @@ function () {
           }
         }
       }
+
+      var allTR = document.querySelectorAll('.statistic__item');
+      setTimeout(function () {
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+          for (var _iterator2 = allTR[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var tr = _step2.value;
+            tr.classList.remove('transition-up');
+          }
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+              _iterator2.return();
+            }
+          } finally {
+            if (_didIteratorError2) {
+              throw _iteratorError2;
+            }
+          }
+        }
+      }, 200);
     }
   }]);
 
@@ -11179,7 +11415,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "43189" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33059" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
