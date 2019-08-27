@@ -94,10 +94,8 @@ class Controller {
 		);
 	}
 
-
 	/**
-	 * 
-	 * @param {Boolean} success 
+	 * @param {Boolean} success increment or decrement score
 	 * @return {void}
 	 */
 	setScore(success) {

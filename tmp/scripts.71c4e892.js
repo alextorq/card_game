@@ -8684,6 +8684,63 @@ function () {
         name: 'ember',
         image: 'assets/image/witcher/witcher_5.jpg'
       }]
+    }, {
+      amountColumn: 6,
+      amountRow: 3,
+      amountPair: 1,
+      cardToCompare: 3,
+      scoreOpen: 5,
+      scoreSuccess: 10,
+      optionalScore: 60,
+      typesOfCars: [{
+        name: 'vue',
+        image: 'assets/image/witcher/witcher_1.jpg'
+      }, {
+        name: 'aurelia',
+        image: 'assets/image/witcher/witcher_2.jpg'
+      }, {
+        name: 'angular',
+        image: 'assets/image/witcher/witcher_3.jpg'
+      }, {
+        name: 'backbone',
+        image: 'assets/image/witcher/witcher_4.jpg'
+      }, {
+        name: 'ember',
+        image: 'assets/image/witcher/witcher_5.jpg'
+      }, {
+        name: 'sdd',
+        image: 'assets/image/witcher/witcher_6.jpg'
+      }]
+    }, {
+      amountColumn: 7,
+      amountRow: 4,
+      amountPair: 1,
+      cardToCompare: 4,
+      scoreOpen: 5,
+      scoreSuccess: 15,
+      optionalScore: 150,
+      typesOfCars: [{
+        name: 'vue',
+        image: 'assets/image/witcher/witcher_11.jpg'
+      }, {
+        name: 'aurelia',
+        image: 'assets/image/witcher/witcher_12.jpg'
+      }, {
+        name: 'angular',
+        image: 'assets/image/witcher/witcher_10.jpg'
+      }, {
+        name: 'backbone',
+        image: 'assets/image/witcher/witcher_9.jpg'
+      }, {
+        name: 'ember',
+        image: 'assets/image/witcher/witcher_8.jpg'
+      }, {
+        name: 'sdd',
+        image: 'assets/image/witcher/witcher_7.jpg'
+      }, {
+        name: 'sdd',
+        image: 'assets/image/witcher/witcher_6.jpg'
+      }]
     }];
     this.currentLevel = 0;
     this.time = 0;
@@ -8932,8 +8989,7 @@ function () {
       this.view.setStyle(this.model.getLevel().amountColumn, this.model.getLevel().amountRow);
     }
     /**
-     * 
-     * @param {Boolean} success 
+     * @param {Boolean} success increment or decrement score
      * @return {void}
      */
 
@@ -10898,7 +10954,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var api = {
-  prefix: "development" === 'development' ? 'http://192.168.81.253:4000/' : '',
+  prefix: "development" === 'development' ? 'http://192.168.88.2:4000/' : '',
   statistic: {
     all: 'statistic/all',
     create: 'statistic/new'
@@ -11154,11 +11210,18 @@ function () {
     this.model = model ? model : null;
     this.saveUser();
   }
+  /**
+   * Load all statistic
+   * @return {void}
+   */
+
 
   _createClass(StatisticController, [{
     key: "loadList",
-    value: function loadList(id) {
+    value: function loadList() {
       var _this = this;
+
+      var id = this.getUuidFromLocalStorage();
 
       _axios.default.get(_api.default.prefix + _api.default.statistic.all).then(function (response) {
         _this.list = response.data.sort(_this.sort);
@@ -11166,6 +11229,13 @@ function () {
         _this.view.showStatistic(_this.list, id);
       }).catch(function () {});
     }
+    /**
+     * Sort users by rating
+     * rating = score / time
+     * @param {Object} a 
+     * @param {Object} b 
+     */
+
   }, {
     key: "sort",
     value: function sort(a, b) {
@@ -11173,11 +11243,21 @@ function () {
       var ratingB = b.score / b.time;
       return ratingA - ratingB;
     }
+    /**
+     *@return {void}
+     */
+
   }, {
     key: "askName",
     value: function askName() {
       this.name = this.view.showFormForName() || 'undefined_cat';
     }
+    /**
+     * 
+     * @param {String} id 
+     * @return {void}
+     */
+
   }, {
     key: "setUuidToLocalStorage",
     value: function setUuidToLocalStorage(id) {
@@ -11204,12 +11284,12 @@ function () {
           score: this.model.score,
           uuid: id
         }).then(function () {
-          _this2.loadList(id);
+          _this2.loadList();
         }).catch(function () {
           alert('something went wrong');
         });
       } else {
-        this.loadList(this.getUuidFromLocalStorage());
+        this.loadList();
       }
     }
   }]);
@@ -11415,7 +11495,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33059" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "43709" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
