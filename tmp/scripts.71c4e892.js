@@ -8439,7 +8439,7 @@ function () {
         item.classList.remove('flip');
         setTimeout(function () {
           item.querySelector('.front-face').src = '';
-        }, TIME_TO_ANIMATE);
+        }, TIME_TO_ANIMATE / 1.5);
       });
     }
     /**
@@ -8690,7 +8690,7 @@ function () {
       amountPair: 1,
       cardToCompare: 3,
       scoreOpen: 5,
-      scoreSuccess: 10,
+      scoreSuccess: 30,
       optionalScore: 60,
       typesOfCars: [{
         name: 'vue',
@@ -8717,7 +8717,7 @@ function () {
       amountPair: 1,
       cardToCompare: 4,
       scoreOpen: 5,
-      scoreSuccess: 15,
+      scoreSuccess: 50,
       optionalScore: 150,
       typesOfCars: [{
         name: 'vue',
@@ -11234,6 +11234,7 @@ function () {
      * rating = score / time
      * @param {Object} a 
      * @param {Object} b 
+     * @return {Number}
      */
 
   }, {
@@ -11263,11 +11264,20 @@ function () {
     value: function setUuidToLocalStorage(id) {
       localStorage.setItem('uuid', id);
     }
+    /**
+     * get last user uuid from localStorage
+     * @return {String|null}
+     */
+
   }, {
     key: "getUuidFromLocalStorage",
     value: function getUuidFromLocalStorage() {
       return localStorage.getItem('uuid') || null;
     }
+    /**
+     * @return {void}
+     */
+
   }, {
     key: "saveUser",
     value: function saveUser() {
@@ -11320,7 +11330,7 @@ function () {
     _classCallCheck(this, ViewsStatistic);
 
     this.root = root;
-    this.root.innerHTML = "\n            <h1 class=\"statistic__title\">Statistic</h1>\n            <table class=\"statistic__list\">\n            <tbody class=\"statistic__list_body\"> \n                <tr class=\"statistic__item\">\n                    <td class=\"name\">Name</td>\n                    <td class=\"time\">Time</td>\n                    <td class=\"score\">Score</td>\n                </tr>\n            </tbody> \n            </table>\n        ";
+    this.root.innerHTML = "\n            <h1 class=\"statistic__title\">Statistic</h1>\n            <a class=\"github_link\" href=\"https://github.com/alextorq/card_game\">github</a>\n            <table class=\"statistic__list\">\n            <tbody class=\"statistic__list_body\"> \n                <tr class=\"statistic__item\">\n                    <td class=\"name\">Name</td>\n                    <td class=\"time\">Time</td>\n                    <td class=\"score\">Score</td>\n                </tr>\n            </tbody> \n            </table>\n        ";
   }
   /**
    * 
@@ -11495,7 +11505,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "43709" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "37703" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

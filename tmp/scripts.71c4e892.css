@@ -246,6 +246,12 @@ body {
   .statistic__item.self {
     color: red; }
 
+.github_link {
+  color: #00ff7f;
+  text-decoration: none;
+  text-align: center;
+  display: block; }
+
 .statistic__title {
   color: #00ff7f;
   font-size: 5vw;

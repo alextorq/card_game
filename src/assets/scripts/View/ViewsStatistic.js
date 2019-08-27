@@ -3,6 +3,7 @@ class ViewsStatistic {
         this.root = root;
         this.root.innerHTML = `
             <h1 class="statistic__title">Statistic</h1>
+            <a class="github_link" href="https://github.com/alextorq/card_game">github</a>
             <table class="statistic__list">
             <tbody class="statistic__list_body"> 
                 <tr class="statistic__item">

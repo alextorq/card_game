@@ -29,6 +29,7 @@ class StatisticController {
      * rating = score / time
      * @param {Object} a 
      * @param {Object} b 
+     * @return {Number}
      */
     sort(a, b) {
         let ratingA = a.score / a.time; 
@@ -50,9 +51,18 @@ class StatisticController {
     setUuidToLocalStorage(id) {
         localStorage.setItem('uuid', id);
     }
+
+    /**
+     * get last user uuid from localStorage
+     * @return {String|null}
+     */
     getUuidFromLocalStorage() {
         return localStorage.getItem('uuid') || null;
     }
+
+    /**
+     * @return {void}
+     */
     saveUser() {
         if (this.model) {
             this.askName();

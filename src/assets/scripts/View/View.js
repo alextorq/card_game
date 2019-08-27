@@ -84,7 +84,7 @@ class View {
 			item.classList.remove('flip');
 			setTimeout(() => {
 				item.querySelector('.front-face').src = '';
-			}, TIME_TO_ANIMATE);
+			}, TIME_TO_ANIMATE / 1.5);
 		});
 	}
 

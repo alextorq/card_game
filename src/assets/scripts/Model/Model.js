@@ -53,7 +53,7 @@ class Model {
 			amountPair: 1,
 			cardToCompare: 3,
 			scoreOpen: 5,
-			scoreSuccess: 10,
+			scoreSuccess: 30,
 			optionalScore: 60,
 			typesOfCars: [
 				{
@@ -88,7 +88,7 @@ class Model {
 			amountPair: 1,
 			cardToCompare: 4,
 			scoreOpen: 5,
-			scoreSuccess: 15,
+			scoreSuccess: 50,
 			optionalScore: 150,
 			typesOfCars: [
 				{
