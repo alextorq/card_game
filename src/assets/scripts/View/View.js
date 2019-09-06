@@ -119,8 +119,8 @@ class View {
 	createCard(framework, image) {
 		let template = `
 		<div class="memory-card">
-			<img class="front-face" src="" alt="frame" />
-			<img class="back-face" src="/assets/image/cover.jpg" alt="Morty" />
+			<img draggable="false" class="front-face" src="" alt="frame" />
+			<img draggable="false" class="back-face" src="/assets/image/cover.jpg" alt="Morty" />
 		</div>
 		`;
 		let cardWrapper = document.createElement('div');

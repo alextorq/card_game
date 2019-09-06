@@ -8498,7 +8498,7 @@ function () {
   }, {
     key: "createCard",
     value: function createCard(framework, image) {
-      var template = "\n\t\t<div class=\"memory-card\">\n\t\t\t<img class=\"front-face\" src=\"\" alt=\"frame\" />\n\t\t\t<img class=\"back-face\" src=\"/assets/image/cover.jpg\" alt=\"Morty\" />\n\t\t</div>\n\t\t";
+      var template = "\n\t\t<div class=\"memory-card\">\n\t\t\t<img draggable=\"false\" class=\"front-face\" src=\"\" alt=\"frame\" />\n\t\t\t<img draggable=\"false\" class=\"back-face\" src=\"/assets/image/cover.jpg\" alt=\"Morty\" />\n\t\t</div>\n\t\t";
       var cardWrapper = document.createElement('div');
       cardWrapper.innerHTML = template;
       var card = cardWrapper.firstElementChild;
@@ -8933,7 +8933,6 @@ function () {
       _this.startTimer();
     });
     this.view.event.addListener('selectCard', function (card) {
-      //TODO попробывать написать с помощью FSM
       // Если карта уже открыта то выходим 
       if (_this.checkSelected(card)) {
         return;
@@ -11505,7 +11504,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "37703" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "46623" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

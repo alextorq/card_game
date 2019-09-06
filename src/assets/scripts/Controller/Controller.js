@@ -42,7 +42,6 @@ class Controller {
 
 		this.view.event.addListener('selectCard', (card) => {
 
-			//TODO попробывать написать с помощью FSM
 
 			// Если карта уже открыта то выходим 
 			if (this.checkSelected(card)) {return;}
