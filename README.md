@@ -1,5 +1,6 @@
 # Card Memory Game
 
+![card game](http://i.imgur.com/xYNP7FU.png)
 
 ## installation
 ``` sh
